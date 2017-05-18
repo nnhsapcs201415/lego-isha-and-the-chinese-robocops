@@ -18,5 +18,14 @@ public class ObjectDetect implements FeatureListener {
 		int range = (int)feature.getRangeReading().getRange();
 		Sound.playTone(1200 - (range * 10), 100);
 		System.out.println("Range:" + range);
+		if (range < 30)
+		{
+		    Motor.B.forward();
+		}
+		else
+		{
+		    Motor.B.forward();
+		    Motor.C.forward();
+		}
 	}
 }
