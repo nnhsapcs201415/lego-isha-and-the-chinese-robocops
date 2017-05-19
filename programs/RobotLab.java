@@ -1,5 +1,8 @@
-
-
+import lejos.robotics.navigation.DifferentialPilot;
+import lejos.nxt.Button;                               
+import lejos.nxt.Motor;
+import lejos.nxt.SensorPort;
+import lejos.nxt.TouchSensor;
 /**
  * Write a description of class RobotLab here.
  * 
@@ -8,33 +11,28 @@
  */
 public class RobotLab
 {
-    /** description of instance variable x (add comment for each instance variable) */
-    private int x;
-
-    /**
-     * Default constructor for objects of class RobotLab
-     */
-    public RobotLab()
+    public static void main (String[] args)
     {
-        // initialise instance variables
-        x = 0;
+        TravelTest traveler = new TravelTest();
+        traveler.pilot = new DifferentialPilot(56, 107,Motor.B, Motor.C);
+        traveler.go();
     }
-
-    /**
-     * An example of a method - replace this comment with your own
-     *    that describes the operation of the method
-     *
-     * @pre        preconditions for the method
-     *            (what the method assumes about the method's parameters and class's state)
-     * @post    postconditions for the method
-     *            (what the method guarantees upon completion)
-     * @param    y    description of parameter y
-     * @return    description of the return value
-     */
-    public int sampleMethod(int y)
     {
-        // put your code here
-        return x+y;
+        //code for getting out of the box 
+        if (range < 30)
+        {
+            pilot.rotate(5);
+            pilot.travel(10);
+            while(touch.isPressed())
+            {
+                pilot.travel(-15);
+                pilot.rotate(15);
+            }
+        }
+        else
+        {
+            pilot.travel(100);
+        }
     }
-
 }
+
