@@ -9,78 +9,76 @@ import lejos.nxt.*;
 import lejos.robotics.objectdetection.*;
 public class RobotFinal implements FeatureListener {
 
-    public int state; 
+    private int state; 
     DifferentialPilot pilot;
     TouchSensor bump = new TouchSensor(SensorPort.S1);
     public static int MAX_DETECT = 80;
-    public int range;
-    
-
+    private int range;
     public static void main(String[] args) throws Exception {
         RobotFinal robot = new RobotFinal();
         UltrasonicSensor us = new UltrasonicSensor(SensorPort.S4);
         RangeFeatureDetector fd = new RangeFeatureDetector(us, MAX_DETECT, 500);
         fd.addListener(robot);
-        TravelTest traveler = new TravelTest();
-        traveler.pilot = new DifferentialPilot(56, 107,Motor.B, Motor.C);
+        robot.pilot = new DifferentialPilot(56, 107,Motor.B, Motor.C);
+        robot.go();
         Button.ENTER.waitForPressAndRelease();
-        //robot.run();
+        
     }
-
-    
 
     public void featureDetected(Feature feature, FeatureDetector detector) {
         this.range = (int)feature.getRangeReading().getRange();
         Sound.playTone(1200 - (range * 10), 100);
         System.out.println("Range:" + range);
+        
+        
+    }
+    
+    public void go()
+    
+    {
         this.state = 0;
         while(true)
         {
-            TouchSensor touch = new TouchSensor(SensorPort.S1);        
+            TouchSensor touch = new TouchSensor(SensorPort.S1);
             if(this.state == 0)
             {
-
-                if (this.range < 30)
+                while(range < 20)
                 {
-                    pilot.rotate(1);
+                    System.out.println("Range:" + range);
+                    pilot.rotate(60);
                     while(touch.isPressed())
                     {
-                        pilot.travel(-10);
-                        pilot.travel(5);
+                        pilot.travel(-20);
+                        pilot.rotate(30);
                     }
                 }
-                else
-                {
-                    pilot.travel(50);
-                }
+                pilot.travel(200);
+                System.out.println("State:" + this.state);
                 this.state = 1;
             }
-            if(this.state == 1)
+            while(this.state == 1)
             {
-                pilot.rotate(10);
-                pilot.travel(20);
-                if(this.range > 15 && this.range < 40)
+                System.out.println("State:" + this.state);
+                System.out.println("Range:" + range);
+                pilot.rotate(30);
+                pilot.travel(150);
+                if(range > 15 && range < 40)
                 {
+                    pilot.travel(500);
                     while(touch.isPressed())
                     {
-                        this.state =2;
+                        this.state = 1;
                     }
                 }
-            }
-            if(this.state == 2)
-            {
                 LightSensor light = new LightSensor(SensorPort.S3);
-                while(!(light.getLightValue() > 40))
+                if(light.getLightValue() < 35)
                 {
-                    pilot.travel(5);
+                    System.out.println("Light Value:" +light.getLightValue());
+                    pilot.travel(-50);
+                    pilot.rotate(120);
                 }
-                this.state = 3;
-            }
-            if(this.state == 3)
-            {
-                pilot.travel(-10);
-                pilot.rotate(120);
-                this.state = 1;
+                System.out.println("Range:" + range);
+                
             }
         }
     }
